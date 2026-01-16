@@ -1,0 +1,194 @@
+/* style.css - Premium Tetris Game styling */
+
+/* Global reset and dark theme */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: hsl(220, 15%, 10%);
+  color: hsl(0, 0%, 90%);
+  overflow: hidden;
+}
+
+/* Glassmorphism container */
+.game-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 1.5rem auto;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 24px;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, hsl(210, 100%, 75%), hsl(260, 100%, 75%));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Line-clear flash effect (canvas-based but triggered via class on container if needed, or just drawn) 
+   We'll use a CSS class on the canvas container for a brief flash. */
+.flash-white {
+  animation: flash 0.3s ease-out;
+}
+
+@keyframes flash {
+  0% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(2);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
+}
+
+.game-layout {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Canvas styling */
+#tetris-canvas {
+  display: block;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 140px;
+}
+
+.ui-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ui-card h3 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: hsl(210, 20%, 60%);
+  margin-bottom: 0.25rem;
+}
+
+#next-canvas {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.stat-item .label {
+  font-size: 0.75rem;
+  color: hsl(210, 20%, 50%);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.stat-item .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.control-btn {
+  padding: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.control-btn.primary {
+  background: linear-gradient(135deg, hsl(210, 80%, 50%), hsl(210, 100%, 40%));
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 120, 255, 0.3);
+}
+
+.control-btn.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.control-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.control-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.control-btn.danger {
+  background: linear-gradient(135deg, hsl(0, 70%, 50%), hsl(0, 80%, 40%));
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 550px) {
+  .game-container {
+    margin: 0;
+    border-radius: 0;
+    height: 100vh;
+    max-width: none;
+  }
+
+  .game-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .side-panel {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+  }
+}
