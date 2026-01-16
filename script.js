@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const pauseBtn = document.getElementById('pause-btn');
   const restartBtn = document.getElementById('restart-btn');
 
+  // Mobile Controls
+  const moveLeftBtn = document.getElementById('move-left');
+  const moveRightBtn = document.getElementById('move-right');
+  const rotateBtn = document.getElementById('rotate-btn');
+  const softDropBtn = document.getElementById('soft-drop');
+  const hardDropBtn = document.getElementById('hard-drop');
+
   // Dimensions
   const COLS = 10;
   const ROWS = 20;
@@ -341,6 +348,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     pauseBtn.blur();
   });
+
+  // Mobile Controls Event Listeners
+  const handleMobileControl = (callback) => {
+    if (gameOver || !currentPiece || animationId === null) return;
+    callback();
+  };
+
+  moveLeftBtn.addEventListener('click', () => {
+    handleMobileControl(() => {
+      currentPiece.pos.x--;
+      if (collide(board, currentPiece)) currentPiece.pos.x++;
+    });
+  });
+
+  moveRightBtn.addEventListener('click', () => {
+    handleMobileControl(() => {
+      currentPiece.pos.x++;
+      if (collide(board, currentPiece)) currentPiece.pos.x--;
+    });
+  });
+
+  rotateBtn.addEventListener('click', () => {
+    handleMobileControl(() => playerRotate(1));
+  });
+
+  softDropBtn.addEventListener('click', () => {
+    handleMobileControl(() => playerDrop());
+  });
+
+  hardDropBtn.addEventListener('click', () => {
+    handleMobileControl(() => {
+      const ghost = getGhostPiece();
+      currentPiece.pos.y = ghost.pos.y;
+      playerDrop();
+    });
+  });
+
+  // Prevent scrolling when touching the game (important for mobile)
+  window.addEventListener('touchmove', (e) => {
+    if (animationId !== null && !gameOver) {
+      if (e.target.closest('.game-container')) {
+        e.preventDefault();
+      }
+    }
+  }, { passive: false });
 
   // Initial draw to show the grid
   draw();
