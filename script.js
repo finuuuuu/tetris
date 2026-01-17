@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.getElementById('start-btn');
   const pauseBtn = document.getElementById('pause-btn');
   const restartBtn = document.getElementById('restart-btn');
+  const highScoreListEl = document.getElementById('high-score-list');
+  const viewAllBtn = document.getElementById('view-all-btn');
+  const nameModal = document.getElementById('name-modal');
+  const allScoresModal = document.getElementById('all-scores-modal');
+  const playerNameInput = document.getElementById('player-name-input');
+  const saveScoreBtn = document.getElementById('save-score-btn');
+  const closeScoresBtn = document.getElementById('close-scores-btn');
+  const allScoresBody = document.getElementById('all-scores-body');
 
   // Mobile Controls
   const moveLeftBtn = document.getElementById('move-left');
@@ -37,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let linesCleared = 0;
   let gameOver = false;
   let animationId = null;
+  let bag = [];
 
   const TETROMINOES = {
     I: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
@@ -70,8 +79,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getRandomType() {
-    const types = 'IJLOSTZ';
-    return types[Math.floor(Math.random() * types.length)];
+    if (bag.length === 0) {
+      bag = 'IJLOSTZ'.split('');
+      // Fisher-Yates shuffle
+      for (let i = bag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [bag[i], bag[j]] = [bag[j], bag[i]];
+      }
+    }
+    return bag.pop();
   }
 
   function spawnPiece() {
@@ -207,11 +223,62 @@ document.addEventListener('DOMContentLoaded', () => {
     startBtn.disabled = false;
     pauseBtn.style.display = 'none';
     restartBtn.style.display = 'none';
-    alert('Game Over! Final Score: ' + score);
+
     if (animationId) {
       cancelAnimationFrame(animationId);
       animationId = null;
     }
+
+    // High Score Handling
+    const scores = loadScores();
+    const isNewHigh = scores.length < 5 || score > scores[scores.length - 1].score;
+
+    if (score > 0) {
+      setTimeout(() => {
+        nameModal.style.display = 'flex';
+        playerNameInput.focus();
+      }, 500);
+    } else {
+      alert('Game Over! Final Score: ' + score);
+    }
+  }
+
+  function loadScores() {
+    return JSON.parse(localStorage.getItem('tetris-scores') || '[]');
+  }
+
+  function saveScore(name) {
+    const scores = loadScores();
+    scores.push({
+      name: name || 'Anonymous',
+      score: score,
+      date: new Date().toLocaleDateString()
+    });
+    scores.sort((a, b) => b.score - a.score);
+    localStorage.setItem('tetris-scores', JSON.stringify(scores));
+    updateHighScoreList();
+  }
+
+  function updateHighScoreList() {
+    const scores = loadScores().slice(0, 5);
+    highScoreListEl.innerHTML = scores.map(s => `
+      <li class="score-item">
+        <span>${s.name}</span>
+        <strong>${s.score}</strong>
+      </li>
+    `).join('') || '<li class="score-item">No scores yet</li>';
+  }
+
+  function showAllScores() {
+    const scores = loadScores();
+    allScoresBody.innerHTML = scores.map(s => `
+      <tr>
+        <td>${s.name}</td>
+        <td>${s.score}</td>
+        <td>${s.date}</td>
+      </tr>
+    `).join('') || '<tr><td colspan="3">No history available</td></tr>';
+    allScoresModal.style.display = 'flex';
   }
 
   function sweepLines() {
@@ -393,6 +460,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }, { passive: false });
+
+  saveScoreBtn.addEventListener('click', () => {
+    saveScore(playerNameInput.value);
+    nameModal.style.display = 'none';
+    playerNameInput.value = '';
+  });
+
+  viewAllBtn.addEventListener('click', showAllScores);
+  closeScoresBtn.addEventListener('click', () => {
+    allScoresModal.style.display = 'none';
+  });
+
+  // Load initial high scores
+  updateHighScoreList();
 
   // Initial draw to show the grid
   draw();
