@@ -303,12 +303,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const newLevel = Math.floor(linesCleared / 10) + 1;
       if (newLevel !== level) {
         level = newLevel;
-        // Formula: speed = 1000 * (0.85 ^ (level - 1))
+        // Formula: speed = 1000 * (0.9 ^ (level - 1))
         // level 1: 1000ms
-        // level 5: ~522ms
-        // level 10: ~231ms
-        // level 15: ~102ms
-        dropInterval = 1000 * Math.pow(0.85, level - 1);
+        // level 5: ~656ms
+        // level 9: ~430ms
+        // level 15: ~228ms
+        dropInterval = 1000 * Math.pow(0.9, level - 1);
       }
       updateUI();
     }
